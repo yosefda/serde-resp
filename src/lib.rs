@@ -6,8 +6,8 @@ extern crate serde_derive;
 extern crate error_chain;
 
 mod error;
-mod ser;
-mod de;
+pub mod ser;
+pub mod de;
 
 pub use error::{Error, ErrorKind, Result};
 pub use ser::{to_string, Serializer};
