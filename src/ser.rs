@@ -17,57 +17,107 @@ impl<'a> ser::Serializer for &'a mut Serializer {
 
     type Error = Error;
 
+    // Serialise into RESP bulk strings.
+    // true is encoded into "$4\r\ntrue\r\n" and false into "$5\r\nfalse\r\n".
     fn serialize_bool(self, v: bool) -> Result<Self::Ok> {
-        Err(ErrorKind::UnsupportedOperation("serialize_bool".to_owned()).into())
+        match v {
+            true => self.output += &format!("$4\r\ntrue\r\n"),
+            false => self.output += &format!("$5\r\nfalse\r\n"),
+        }
+        Ok(())
     }
 
+    // Serialise into RESP bulk strings.
+    // Encoded format is "$<number-of-bytes>\r\n<string-data>\r\n", for example "-100" is encoded
+    // into "$4\r\n-100\r\n".
     fn serialize_i8(self, v: i8) -> Result<Self::Ok> {
-        Err(ErrorKind::UnsupportedOperation("serialize_i8".to_owned()).into())
+        self.output += &format!("${}\r\n{}\r\n", v.to_string().len(), v.to_string());
+        Ok(())
     }
 
+    // Serialise into RESP bulk strings.
+    // Encoded format is "$<number-of-bytes>\r\n<string-data>\r\n", for example "-100" is encoded
+    // into "$4\r\n-100\r\n".
     fn serialize_i16(self, v: i16) -> Result<Self::Ok> {
-        Err(ErrorKind::UnsupportedOperation("serialize_i16".to_owned()).into())
+        self.output += &format!("${}\r\n{}\r\n", v.to_string().len(), v.to_string());
+        Ok(())
     }
 
+    // Serialise into RESP bulk strings.
+    // Encoded format is "$<number-of-bytes>\r\n<string-data>\r\n", for example "-100" is encoded
+    // into "$4\r\n-100\r\n".
     fn serialize_i32(self, v: i32) -> Result<Self::Ok> {
-        Err(ErrorKind::UnsupportedOperation("serialize_i32".to_owned()).into())
+        self.output += &format!("${}\r\n{}\r\n", v.to_string().len(), v.to_string());
+        Ok(())
     }
 
+    // Serialise into RESP bulk strings.
+    // Encoded format is "$<number-of-bytes>\r\n<string-data>\r\n", for example "-100" is encoded
+    // into "$4\r\n-100\r\n".
     fn serialize_i64(self, v: i64) -> Result<Self::Ok> {
-        Err(ErrorKind::UnsupportedOperation("serialize_i64".to_owned()).into())
+        self.output += &format!("${}\r\n{}\r\n", v.to_string().len(), v.to_string());
+        Ok(())
     }
 
+    // Serialise into RESP bulk strings.
+    // Encoded format is "$<number-of-bytes>\r\n<string-data>\r\n", for example "100" is encoded
+    // into "$3\r\n100\r\n".
     fn serialize_u8(self, v: u8) -> Result<Self::Ok> {
-        Err(ErrorKind::UnsupportedOperation("serialize_u8".to_owned()).into())
+        self.output += &format!("${}\r\n{}\r\n", v.to_string().len(), v.to_string());
+        Ok(())
     }
 
+    // Serialise into RESP bulk strings.
+    // Encoded format is "$<number-of-bytes>\r\n<string-data>\r\n", for example "100" is encoded
+    // into "$3\r\n100\r\n".
     fn serialize_u16(self, v: u16) -> Result<Self::Ok> {
-        Err(ErrorKind::UnsupportedOperation("serialize_u16".to_owned()).into())
+        self.output += &format!("${}\r\n{}\r\n", v.to_string().len(), v.to_string());
+        Ok(())
     }
 
+    // Serialise into RESP bulk strings.
+    // Encoded format is "$<number-of-bytes>\r\n<string-data>\r\n", for example "100" is encoded
+    // into "$3\r\n100\r\n".
     fn serialize_u32(self, v: u32) -> Result<Self::Ok> {
-        Err(ErrorKind::UnsupportedOperation("serialize_u32".to_owned()).into())
+        self.output += &format!("${}\r\n{}\r\n", v.to_string().len(), v.to_string());
+        Ok(())
     }
 
+    // Serialise into RESP bulk strings.
+    // Encoded format is "$<number-of-bytes>\r\n<string-data>\r\n", for example "100" is encoded
+    // into "$3\r\n100\r\n".
     fn serialize_u64(self, v: u64) -> Result<Self::Ok> {
-        Err(ErrorKind::UnsupportedOperation("serialize_u64".to_owned()).into())
+        self.output += &format!("${}\r\n{}\r\n", v.to_string().len(), v.to_string());
+        Ok(())
     }
 
+    // Serialise into RESP bulk strings.
+    // Encoded format is "$<number-of-bytes>\r\n<string-data>\r\n", for example "1.34" is encoded
+    // into "$4\r\n1.34\r\n".
     fn serialize_f32(self, v: f32) -> Result<Self::Ok> {
-        Err(ErrorKind::UnsupportedOperation("serialize_f32".to_owned()).into())
+        self.output += &format!("${}\r\n{}\r\n", v.to_string().len(), v.to_string());
+        Ok(())
     }
 
+    // Serialise into RESP bulk strings.
+    // Encoded format is "$<number-of-bytes>\r\n<string-data>\r\n", for example "1.34" is encoded
+    // into "$4\r\n1.34\r\n".
     fn serialize_f64(self, v: f64) -> Result<Self::Ok> {
-        Err(ErrorKind::UnsupportedOperation("serialize_f64".to_owned()).into())
+        self.output += &format!("${}\r\n{}\r\n", v.to_string().len(), v.to_string());
+        Ok(())
     }
 
+    // Serialise into RESP bulk strings.
+    // Encoded format is "$<number-of-bytes>\r\n<string-data>\r\n", for example "a" is encoded
+    // into "$1\r\na\r\n".
     fn serialize_char(self, v: char) -> Result<Self::Ok> {
-        Err(ErrorKind::UnsupportedOperation("serialize_char".to_owned()).into())
+        self.output += &format!("$1\r\n{}\r\n", v);
+        Ok(())
     }
 
-    // Serialise into bulk string.
-    // Encoded into "$<number-of-bytes>\r\n<string-data>\r\n", for example "foobar" is encoded into
-    // "$6\r\nfoobar\r\n".
+    // Serialise into RESP bulk string.
+    // The encoded form is "$<number-of-bytes>\r\n<string-data>\r\n", for example "foobar" is
+    // encoded into "$6\r\nfoobar\r\n".
     // Empty string is encoded into "$0\r\n\r\n".
     fn serialize_str(self, v: &str) -> Result<Self::Ok> {
         self.output += &format!("${}\r\n{}\r\n", v.len(), v);
@@ -110,8 +160,16 @@ impl<'a> ser::Serializer for &'a mut Serializer {
         Err(ErrorKind::UnsupportedOperation("serialize_newtype_variant".to_owned()).into())
     }
 
+    // Serialise into RESP array.
+    // The encoded form is "*<number-of-elements>\r\n<RESP-type-for-every-element>", for example
+    // ["foo", "bar"] is encoded into "*2\r\n$3\r\nfoo\r\n$3\r\nbar\r\n".
+    // @todo: finish this after primitives are done
     fn serialize_seq(self, len: Option<usize>) -> Result<Self::SerializeSeq> {
-        Err(ErrorKind::UnsupportedOperation("serialize_seq".to_owned()).into())
+        // len must be known upfront.
+        if len.is_none() {
+            return Err(ErrorKind::SerError("sequence length is unknown".to_owned()).into());
+        }
+        Ok(self)
     }
 
     fn serialize_tuple(self, len: usize) -> Result<Self::SerializeTuple> {
@@ -145,7 +203,7 @@ impl<'a> ser::Serializer for &'a mut Serializer {
         Err(ErrorKind::UnsupportedOperation("collect_str".to_owned()).into())
     }
 
-    type SerializeSeq = Impossible<Self::Ok, Self::Error>;
+    type SerializeSeq = Self;
     type SerializeTuple = Impossible<Self::Ok, Self::Error>;
     type SerializeTupleStruct = Impossible<Self::Ok, Self::Error>;
     type SerializeTupleVariant = Impossible<Self::Ok, Self::Error>;
@@ -154,9 +212,115 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     type SerializeStructVariant = Impossible<Self::Ok, Self::Error>;
 }
 
+impl<'a> ser::SerializeSeq for &'a mut Serializer {
+    // Must match the `Ok` type of the serializer.
+    type Ok = ();
+    // Must match the `Error` type of the serializer.
+    type Error = Error;
+
+    // Serialize a single element of the sequence.
+    fn serialize_element<T>(&mut self, value: &T) -> Result<()>
+        where T: ?Sized + Serialize
+    {
+        if !self.output.ends_with('[') {
+            self.output += ",";
+        }
+        value.serialize(&mut **self)
+    }
+
+    // Close the sequence.
+    fn end(self) -> Result<()> {
+        self.output += "]";
+        Ok(())
+    }
+}
+
+///////////////////////////////////////////////////////////////////
+
+#[test]
+fn test_serialize_bool() {
+    assert_eq!(to_string(&true).unwrap(), "$4\r\ntrue\r\n");
+    assert_eq!(to_string(&false).unwrap(), "$5\r\nfalse\r\n");
+}
+
+#[test]
+fn test_serialize_i8() {
+    let neg_num: i8 = -100;
+    let pos_num: i8 = 100;
+    assert_eq!(to_string(&neg_num).unwrap(), "$4\r\n-100\r\n");
+    assert_eq!(to_string(&pos_num).unwrap(), "$3\r\n100\r\n");
+}
+
+#[test]
+fn test_serialize_i16() {
+    let neg_num: i16 = -100;
+    let pos_num: i16 = 100;
+    assert_eq!(to_string(&neg_num).unwrap(), "$4\r\n-100\r\n");
+    assert_eq!(to_string(&pos_num).unwrap(), "$3\r\n100\r\n");
+}
+
+#[test]
+fn test_serialize_i32() {
+    let neg_num: i32 = -100;
+    let pos_num: i32 = 100;
+    assert_eq!(to_string(&neg_num).unwrap(), "$4\r\n-100\r\n");
+    assert_eq!(to_string(&pos_num).unwrap(), "$3\r\n100\r\n");
+}
+
+#[test]
+fn test_serialize_i64() {
+    let neg_num: i32 = -100;
+    let pos_num: i32 = 100;
+    assert_eq!(to_string(&neg_num).unwrap(), "$4\r\n-100\r\n");
+    assert_eq!(to_string(&pos_num).unwrap(), "$3\r\n100\r\n");
+}
+
+#[test]
+fn test_serialize_u8() {
+    let pos_num: u8 = 100;
+    assert_eq!(to_string(&pos_num).unwrap(), "$3\r\n100\r\n");
+}
+
+#[test]
+fn test_serialize_u16() {
+    let pos_num: u16 = 100;
+    assert_eq!(to_string(&pos_num).unwrap(), "$3\r\n100\r\n");
+}
+
+#[test]
+fn test_serialize_u32() {
+    let pos_num: u32 = 100;
+    assert_eq!(to_string(&pos_num).unwrap(), "$3\r\n100\r\n");
+}
+
+#[test]
+fn test_serialize_u64() {
+    let pos_num: u64 = 100;
+    assert_eq!(to_string(&pos_num).unwrap(), "$3\r\n100\r\n");
+}
+
+#[test]
+fn test_serialize_f32() {
+    let neg_num: f32 = -1.34;
+    let pos_num: f32 = 1.34;
+    assert_eq!(to_string(&neg_num).unwrap(), "$5\r\n-1.34\r\n");
+    assert_eq!(to_string(&pos_num).unwrap(), "$4\r\n1.34\r\n");
+}
+
+#[test]
+fn test_serialize_char() {
+    assert_eq!(to_string(&'a').unwrap(), "$1\r\na\r\n");
+}
 
 #[test]
 fn test_serialize_str() {
     assert_eq!(to_string(&"").unwrap(), "$0\r\n\r\n");
     assert_eq!(to_string(&"foobar").unwrap(), "$6\r\nfoobar\r\n");
 }
+
+//#[test]
+//fn test_serialize_seq() {
+//    let mut vec: Vec<String> = Vec::new();
+//    println!("TEST {:?}", to_string(&vec));
+//    assert_eq!(true, true);
+//}
