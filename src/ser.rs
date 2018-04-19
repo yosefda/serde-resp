@@ -169,6 +169,14 @@ impl<'a> ser::Serializer for &'a mut Serializer {
         if len.is_none() {
             return Err(ErrorKind::SerError("sequence length is unknown".to_owned()).into());
         }
+        self.output += "*";
+
+        if len.unwrap() == 0 {
+            self.output += &format!("{}\r\n", len.unwrap());
+        } else {
+            self.output += &format!("{}", len.unwrap());
+        }
+
         Ok(self)
     }
 
@@ -222,15 +230,11 @@ impl<'a> ser::SerializeSeq for &'a mut Serializer {
     fn serialize_element<T>(&mut self, value: &T) -> Result<()>
         where T: ?Sized + Serialize
     {
-        if !self.output.ends_with('[') {
-            self.output += ",";
-        }
         value.serialize(&mut **self)
     }
 
     // Close the sequence.
     fn end(self) -> Result<()> {
-        self.output += "]";
         Ok(())
     }
 }
@@ -318,9 +322,52 @@ fn test_serialize_str() {
     assert_eq!(to_string(&"foobar").unwrap(), "$6\r\nfoobar\r\n");
 }
 
-//#[test]
-//fn test_serialize_seq() {
-//    let mut vec: Vec<String> = Vec::new();
-//    println!("TEST {:?}", to_string(&vec));
-//    assert_eq!(true, true);
-//}
+#[test]
+fn test_serialize_seq() {
+    // bool
+    assert_eq!(to_string(&(Vec::new() as Vec<bool>)).unwrap(), "*0\r\n");
+    assert_eq!(to_string(&vec![true, false]).unwrap(), "*2$4\r\ntrue\r\n$5\r\nfalse\r\n");
+
+    // signed int
+    assert_eq!(to_string(&(Vec::new() as Vec<i8>)).unwrap(), "*0\r\n");
+    assert_eq!(to_string(&vec![1 as i8, 2 as i8]).unwrap(), "*2$1\r\n1\r\n$1\r\n2\r\n");
+
+    assert_eq!(to_string(&(Vec::new() as Vec<i16>)).unwrap(), "*0\r\n");
+    assert_eq!(to_string(&vec![1 as i16, 2 as i16]).unwrap(), "*2$1\r\n1\r\n$1\r\n2\r\n");
+
+    assert_eq!(to_string(&(Vec::new() as Vec<i32>)).unwrap(), "*0\r\n");
+    assert_eq!(to_string(&vec![1 as i32, 2 as i32]).unwrap(), "*2$1\r\n1\r\n$1\r\n2\r\n");
+
+    assert_eq!(to_string(&(Vec::new() as Vec<i64>)).unwrap(), "*0\r\n");
+    assert_eq!(to_string(&vec![1 as i64, 2 as i64]).unwrap(), "*2$1\r\n1\r\n$1\r\n2\r\n");
+
+    // unsigned int
+    assert_eq!(to_string(&(Vec::new() as Vec<u8>)).unwrap(), "*0\r\n");
+    assert_eq!(to_string(&vec![1 as u8, 2 as u8]).unwrap(), "*2$1\r\n1\r\n$1\r\n2\r\n");
+
+    assert_eq!(to_string(&(Vec::new() as Vec<u16>)).unwrap(), "*0\r\n");
+    assert_eq!(to_string(&vec![1 as u16, 2 as u16]).unwrap(), "*2$1\r\n1\r\n$1\r\n2\r\n");
+
+    assert_eq!(to_string(&(Vec::new() as Vec<u32>)).unwrap(), "*0\r\n");
+    assert_eq!(to_string(&vec![1 as u32, 2 as u32]).unwrap(), "*2$1\r\n1\r\n$1\r\n2\r\n");
+
+    assert_eq!(to_string(&(Vec::new() as Vec<u64>)).unwrap(), "*0\r\n");
+    assert_eq!(to_string(&vec![1 as u64, 2 as u64]).unwrap(), "*2$1\r\n1\r\n$1\r\n2\r\n");
+
+    // float
+    assert_eq!(to_string(&(Vec::new() as Vec<f32>)).unwrap(), "*0\r\n");
+    assert_eq!(to_string(&vec![1 as f32, 2.14 as f32]).unwrap(), "*2$1\r\n1\r\n$4\r\n2.14\r\n");
+
+    assert_eq!(to_string(&(Vec::new() as Vec<f64>)).unwrap(), "*0\r\n");
+    assert_eq!(to_string(&vec![1 as f64, 2.14 as f64]).unwrap(), "*2$1\r\n1\r\n$4\r\n2.14\r\n");
+
+    // char
+    assert_eq!(to_string(&(Vec::new() as Vec<char>)).unwrap(), "*0\r\n");
+    assert_eq!(to_string(&vec!['a', 'b']).unwrap(), "*2$1\r\na\r\n$1\r\nb\r\n");
+
+    // Vec<Vec<T>>
+    assert_eq!(to_string(&(Vec::new() as Vec<Vec<char>>)).unwrap(), "*0\r\n");
+    assert_eq!(to_string(&vec![vec!['a'], vec!['b', 'c']]).unwrap(), "*2*1$1\r\na\r\n*2$1\r\nb\r\n$1\r\nc\r\n");
+
+    // @todo sequence of compound data: struct, tuple, etc
+}
