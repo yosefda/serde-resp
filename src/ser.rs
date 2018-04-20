@@ -124,7 +124,7 @@ impl<'a> ser::Serializer for &'a mut Serializer {
         Ok(())
     }
 
-    fn serialize_bytes(self, v: &[u8]) -> Result<Self::Ok> {
+    fn serialize_bytes(self, _v: &[u8]) -> Result<Self::Ok> {
         Err(ErrorKind::UnsupportedOperation("".to_owned()).into())
     }
 
@@ -132,7 +132,7 @@ impl<'a> ser::Serializer for &'a mut Serializer {
         Err(ErrorKind::UnsupportedOperation("serialize_none".to_owned()).into())
     }
 
-    fn serialize_some<T: ? Sized>(self, value: &T) -> Result<Self::Ok> where
+    fn serialize_some<T: ? Sized>(self, _value: &T) -> Result<Self::Ok> where
         T: Serialize {
         Err(ErrorKind::UnsupportedOperation("serialize_some".to_owned()).into())
     }
@@ -141,20 +141,20 @@ impl<'a> ser::Serializer for &'a mut Serializer {
         Err(ErrorKind::UnsupportedOperation("serialize_unit".to_owned()).into())
     }
 
-    fn serialize_unit_struct(self, name: &str) -> Result<Self::Ok> {
+    fn serialize_unit_struct(self, _name: &str) -> Result<Self::Ok> {
         Err(ErrorKind::UnsupportedOperation("serialize_unit_struct".to_owned()).into())
     }
 
-    fn serialize_unit_variant(self, name: &str, variant_index: u32, variant: &str) -> Result<Self::Ok> {
+    fn serialize_unit_variant(self, _name: &str, _variant_index: u32, _variant: &str) -> Result<Self::Ok> {
         Err(ErrorKind::UnsupportedOperation("serialize_unit_variant".to_owned()).into())
     }
 
-    fn serialize_newtype_struct<T: ? Sized>(self, name: &str, value: &T) -> Result<Self::Ok> where
+    fn serialize_newtype_struct<T: ? Sized>(self, _name: &str, _value: &T) -> Result<Self::Ok> where
         T: Serialize {
         Err(ErrorKind::UnsupportedOperation("serialize_newtype_struct".to_owned()).into())
     }
 
-    fn serialize_newtype_variant<T: ? Sized>(self, name: &str, variant_index: u32, variant: &str, value: &T) -> Result<Self::Ok> where
+    fn serialize_newtype_variant<T: ? Sized>(self, _name: &str, _variant_index: u32, _variant: &str, _value: &T) -> Result<Self::Ok> where
         T: Serialize {
         Err(ErrorKind::UnsupportedOperation("serialize_newtype_variant".to_owned()).into())
     }
@@ -178,39 +178,42 @@ impl<'a> ser::Serializer for &'a mut Serializer {
         Ok(self)
     }
 
+    // Serialise into RESP array.
+    // The encoded form is "*<number-of-elements>\r\n<RESP-type-for-every-element>", for example
+    // ("foo", "bar") is encoded into "*2\r\n$3\r\nfoo\r\n$3\r\nbar\r\n".
     fn serialize_tuple(self, len: usize) -> Result<Self::SerializeTuple> {
-        Err(ErrorKind::UnsupportedOperation("serialize_tuple".to_owned()).into())
+        self.serialize_seq(Some(len))
     }
 
-    fn serialize_tuple_struct(self, name: &str, len: usize) -> Result<(Self::SerializeStruct)> {
+    fn serialize_tuple_struct(self, _name: &str, _len: usize) -> Result<(Self::SerializeStruct)> {
         Err(ErrorKind::UnsupportedOperation("serialize_tuple_struct".to_owned()).into())
     }
 
-    fn serialize_tuple_variant(self, name: &str, variant_index: u32, variant: &str, len: usize)
+    fn serialize_tuple_variant(self, _name: &str, _variant_index: u32, _variant: &str, _len: usize)
         -> Result<(Self::SerializeStructVariant)> {
         Err(ErrorKind::UnsupportedOperation("serialize_tuple_variant".to_owned()).into())
     }
 
-    fn serialize_map(self, len: Option<usize>) -> Result<(Self::SerializeMap)> {
+    fn serialize_map(self, _len: Option<usize>) -> Result<(Self::SerializeMap)> {
         Err(ErrorKind::UnsupportedOperation("serialize_map".to_owned()).into())
     }
 
-    fn serialize_struct(self, name: &str, len: usize) -> Result<(Self::SerializeStruct)> {
+    fn serialize_struct(self, _name: &str, _len: usize) -> Result<(Self::SerializeStruct)> {
         Err(ErrorKind::UnsupportedOperation("serialize_struct".to_owned()).into())
     }
 
-    fn serialize_struct_variant(self, name: &str, variant_index: u32, variant: &str, len: usize)
+    fn serialize_struct_variant(self, _name: &str, _variant_index: u32, _variant: &str, _len: usize)
         -> Result<(Self::SerializeStructVariant)> {
         Err(ErrorKind::UnsupportedOperation("serialize_struct_variant".to_owned()).into())
     }
 
-    fn collect_str<T: ? Sized>(self, value: &T) -> Result<Self::Ok> where
+    fn collect_str<T: ? Sized>(self, _value: &T) -> Result<Self::Ok> where
         T: Display {
         Err(ErrorKind::UnsupportedOperation("collect_str".to_owned()).into())
     }
 
     type SerializeSeq = Self;
-    type SerializeTuple = Impossible<Self::Ok, Self::Error>;
+    type SerializeTuple = Self;
     type SerializeTupleStruct = Impossible<Self::Ok, Self::Error>;
     type SerializeTupleVariant = Impossible<Self::Ok, Self::Error>;
     type SerializeMap = Impossible<Self::Ok, Self::Error>;
@@ -236,6 +239,26 @@ impl<'a> ser::SerializeSeq for &'a mut Serializer {
         Ok(())
     }
 }
+
+impl<'a> ser::SerializeTuple for &'a mut Serializer {
+    // Must match the `Ok` type of the serializer.
+    type Ok = ();
+    // Must match the `Error` type of the serializer.
+    type Error = Error;
+
+    // Serialize a single element of the sequence.
+    fn serialize_element<T>(&mut self, value: &T) -> Result<()>
+        where T: ?Sized + Serialize
+    {
+        value.serialize(&mut **self)
+    }
+
+    // Close the sequence.
+    fn end(self) -> Result<()> {
+        Ok(())
+    }
+}
+
 
 ///////////////////////////////////////////////////////////////////
 
@@ -366,4 +389,11 @@ fn test_serialize_seq() {
     // Vec<Vec<T>>
     assert_eq!(to_string(&(Vec::new() as Vec<Vec<char>>)).unwrap(), "*0\r\n");
     assert_eq!(to_string(&vec![vec!['a'], vec!['b', 'c']]).unwrap(), "*2*1$1\r\na\r\n*2$1\r\nb\r\n$1\r\nc\r\n");
+}
+
+#[test]
+fn test_serialize_tuple() {
+    assert_eq!(to_string(&("mykey", 10)).unwrap(), "*2$5\r\nmykey\r\n$2\r\n10\r\n");
+    assert_eq!(to_string(&("mykey", vec!['a', 'b'])).unwrap(), "*2$5\r\nmykey\r\n*2$1\r\na\r\n$1\r\nb\r\n");
+    assert_eq!(to_string(&("mykey", (10, 'a'))).unwrap(), "*2$5\r\nmykey\r\n*2$2\r\n10\r\n$1\r\na\r\n");
 }
