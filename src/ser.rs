@@ -128,7 +128,6 @@ impl<'a> ser::Serializer for &'a mut Serializer {
         Err(ErrorKind::UnsupportedOperation("".to_owned()).into())
     }
 
-    // @todo: null bulk string or null array
     fn serialize_none(self) -> Result<Self::Ok> {
         Err(ErrorKind::UnsupportedOperation("serialize_none".to_owned()).into())
     }
@@ -163,7 +162,6 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     // Serialise into RESP array.
     // The encoded form is "*<number-of-elements>\r\n<RESP-type-for-every-element>", for example
     // ["foo", "bar"] is encoded into "*2\r\n$3\r\nfoo\r\n$3\r\nbar\r\n".
-    // @todo: finish this after primitives are done
     fn serialize_seq(self, len: Option<usize>) -> Result<Self::SerializeSeq> {
         // len must be known upfront.
         if len.is_none() {
@@ -368,6 +366,4 @@ fn test_serialize_seq() {
     // Vec<Vec<T>>
     assert_eq!(to_string(&(Vec::new() as Vec<Vec<char>>)).unwrap(), "*0\r\n");
     assert_eq!(to_string(&vec![vec!['a'], vec!['b', 'c']]).unwrap(), "*2*1$1\r\na\r\n*2$1\r\nb\r\n$1\r\nc\r\n");
-
-    // @todo sequence of compound data: struct, tuple, etc
 }
