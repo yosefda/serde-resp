@@ -185,8 +185,11 @@ impl<'a> ser::Serializer for &'a mut Serializer {
         self.serialize_seq(Some(len))
     }
 
-    fn serialize_tuple_struct(self, _name: &str, _len: usize) -> Result<(Self::SerializeStruct)> {
-        Err(ErrorKind::UnsupportedOperation("serialize_tuple_struct".to_owned()).into())
+    // Serialise into RESP array.
+    // The encoded form is "*<number-of-elements>\r\n<RESP-type-for-every-element>", for example
+    // Tuple("foo", "bar") is encoded into "*2\r\n$3\r\nfoo\r\n$3\r\nbar\r\n".
+    fn serialize_tuple_struct(self, _name: &str, len: usize) -> Result<(Self::SerializeTupleStruct)> {
+        self.serialize_seq(Some(len))
     }
 
     fn serialize_tuple_variant(self, _name: &str, _variant_index: u32, _variant: &str, _len: usize)
@@ -214,7 +217,7 @@ impl<'a> ser::Serializer for &'a mut Serializer {
 
     type SerializeSeq = Self;
     type SerializeTuple = Self;
-    type SerializeTupleStruct = Impossible<Self::Ok, Self::Error>;
+    type SerializeTupleStruct = Self;
     type SerializeTupleVariant = Impossible<Self::Ok, Self::Error>;
     type SerializeMap = Impossible<Self::Ok, Self::Error>;
     type SerializeStruct = Impossible<Self::Ok, Self::Error>;
@@ -248,6 +251,24 @@ impl<'a> ser::SerializeTuple for &'a mut Serializer {
 
     // Serialize a single element of the sequence.
     fn serialize_element<T>(&mut self, value: &T) -> Result<()>
+        where T: ?Sized + Serialize
+    {
+        value.serialize(&mut **self)
+    }
+
+    // Close the sequence.
+    fn end(self) -> Result<()> {
+        Ok(())
+    }
+}
+
+impl<'a> ser::SerializeTupleStruct for &'a mut Serializer {
+    // Must match the `Ok` type of the serializer.
+    type Ok = ();
+    // Must match the `Error` type of the serializer.
+    type Error = Error;
+
+    fn serialize_field<T>(&mut self, value: &T) -> Result<()>
         where T: ?Sized + Serialize
     {
         value.serialize(&mut **self)
@@ -396,4 +417,17 @@ fn test_serialize_tuple() {
     assert_eq!(to_string(&("mykey", 10)).unwrap(), "*2$5\r\nmykey\r\n$2\r\n10\r\n");
     assert_eq!(to_string(&("mykey", vec!['a', 'b'])).unwrap(), "*2$5\r\nmykey\r\n*2$1\r\na\r\n$1\r\nb\r\n");
     assert_eq!(to_string(&("mykey", (10, 'a'))).unwrap(), "*2$5\r\nmykey\r\n*2$2\r\n10\r\n$1\r\na\r\n");
+}
+
+#[test]
+fn test_serialize_tuple_struct() {
+    #[derive(Serialize)]
+    struct Tuple<'a, T>(
+        &'a str,
+        T
+    );
+
+    assert_eq!(to_string(&Tuple("mykey", 10)).unwrap(), "*2$5\r\nmykey\r\n$2\r\n10\r\n");
+    assert_eq!(to_string(&Tuple("mykey", vec!['a', 'b'])).unwrap(), "*2$5\r\nmykey\r\n*2$1\r\na\r\n$1\r\nb\r\n");
+    assert_eq!(to_string(&Tuple("mykey", (10, 'a'))).unwrap(), "*2$5\r\nmykey\r\n*2$2\r\n10\r\n$1\r\na\r\n");
 }
