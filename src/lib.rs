@@ -4,6 +4,7 @@ extern crate serde;
 extern crate serde_derive;
 #[macro_use]
 extern crate error_chain;
+extern crate num_traits;
 
 mod error;
 pub mod ser;

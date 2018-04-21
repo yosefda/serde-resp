@@ -1,9 +1,17 @@
 use serde::ser::{self, Serialize, Impossible};
 use error::{Error, ErrorKind, Result};
 use std::fmt::Display;
+use num_traits::Num;
+use std::string::ToString;
 
 pub struct Serializer {
     output: String,
+}
+
+impl Serializer {
+    fn serialize_num_types<T: Num + Display>(&self, v: T) -> String {
+        format!("${}\r\n{}\r\n", v.to_string().len(), v.to_string())
+    }
 }
 
 pub fn to_string<T>(value: &T) -> Result<String> where T: Serialize {
@@ -31,7 +39,7 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     // Encoded format is "$<number-of-bytes>\r\n<string-data>\r\n", for example "-100" is encoded
     // into "$4\r\n-100\r\n".
     fn serialize_i8(self, v: i8) -> Result<Self::Ok> {
-        self.output += &format!("${}\r\n{}\r\n", v.to_string().len(), v.to_string());
+        self.output += &self.serialize_num_types(v);
         Ok(())
     }
 
@@ -39,7 +47,7 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     // Encoded format is "$<number-of-bytes>\r\n<string-data>\r\n", for example "-100" is encoded
     // into "$4\r\n-100\r\n".
     fn serialize_i16(self, v: i16) -> Result<Self::Ok> {
-        self.output += &format!("${}\r\n{}\r\n", v.to_string().len(), v.to_string());
+        self.output += &self.serialize_num_types(v);
         Ok(())
     }
 
@@ -47,7 +55,7 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     // Encoded format is "$<number-of-bytes>\r\n<string-data>\r\n", for example "-100" is encoded
     // into "$4\r\n-100\r\n".
     fn serialize_i32(self, v: i32) -> Result<Self::Ok> {
-        self.output += &format!("${}\r\n{}\r\n", v.to_string().len(), v.to_string());
+        self.output += &self.serialize_num_types(v);
         Ok(())
     }
 
@@ -55,7 +63,7 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     // Encoded format is "$<number-of-bytes>\r\n<string-data>\r\n", for example "-100" is encoded
     // into "$4\r\n-100\r\n".
     fn serialize_i64(self, v: i64) -> Result<Self::Ok> {
-        self.output += &format!("${}\r\n{}\r\n", v.to_string().len(), v.to_string());
+        self.output += &self.serialize_num_types(v);
         Ok(())
     }
 
@@ -63,7 +71,7 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     // Encoded format is "$<number-of-bytes>\r\n<string-data>\r\n", for example "100" is encoded
     // into "$3\r\n100\r\n".
     fn serialize_u8(self, v: u8) -> Result<Self::Ok> {
-        self.output += &format!("${}\r\n{}\r\n", v.to_string().len(), v.to_string());
+        self.output += &self.serialize_num_types(v);
         Ok(())
     }
 
@@ -71,7 +79,7 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     // Encoded format is "$<number-of-bytes>\r\n<string-data>\r\n", for example "100" is encoded
     // into "$3\r\n100\r\n".
     fn serialize_u16(self, v: u16) -> Result<Self::Ok> {
-        self.output += &format!("${}\r\n{}\r\n", v.to_string().len(), v.to_string());
+        self.output += &self.serialize_num_types(v);
         Ok(())
     }
 
@@ -79,7 +87,7 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     // Encoded format is "$<number-of-bytes>\r\n<string-data>\r\n", for example "100" is encoded
     // into "$3\r\n100\r\n".
     fn serialize_u32(self, v: u32) -> Result<Self::Ok> {
-        self.output += &format!("${}\r\n{}\r\n", v.to_string().len(), v.to_string());
+        self.output += &self.serialize_num_types(v);
         Ok(())
     }
 
@@ -87,7 +95,7 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     // Encoded format is "$<number-of-bytes>\r\n<string-data>\r\n", for example "100" is encoded
     // into "$3\r\n100\r\n".
     fn serialize_u64(self, v: u64) -> Result<Self::Ok> {
-        self.output += &format!("${}\r\n{}\r\n", v.to_string().len(), v.to_string());
+        self.output += &self.serialize_num_types(v);
         Ok(())
     }
 
@@ -95,7 +103,7 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     // Encoded format is "$<number-of-bytes>\r\n<string-data>\r\n", for example "1.34" is encoded
     // into "$4\r\n1.34\r\n".
     fn serialize_f32(self, v: f32) -> Result<Self::Ok> {
-        self.output += &format!("${}\r\n{}\r\n", v.to_string().len(), v.to_string());
+        self.output += &self.serialize_num_types(v);
         Ok(())
     }
 
@@ -103,7 +111,7 @@ impl<'a> ser::Serializer for &'a mut Serializer {
     // Encoded format is "$<number-of-bytes>\r\n<string-data>\r\n", for example "1.34" is encoded
     // into "$4\r\n1.34\r\n".
     fn serialize_f64(self, v: f64) -> Result<Self::Ok> {
-        self.output += &format!("${}\r\n{}\r\n", v.to_string().len(), v.to_string());
+        self.output += &self.serialize_num_types(v);
         Ok(())
     }
 
@@ -431,3 +439,8 @@ fn test_serialize_tuple_struct() {
     assert_eq!(to_string(&Tuple("mykey", vec!['a', 'b'])).unwrap(), "*2$5\r\nmykey\r\n*2$1\r\na\r\n$1\r\nb\r\n");
     assert_eq!(to_string(&Tuple("mykey", (10, 'a'))).unwrap(), "*2$5\r\nmykey\r\n*2$2\r\n10\r\n$1\r\na\r\n");
 }
+
+//#[test]
+//fn test_serialize_num_types() {
+//    println!("{}", Serializer::serialize_num_types(5));
+//}
