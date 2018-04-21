@@ -2,7 +2,6 @@ use serde::ser::{self, Serialize, Impossible};
 use error::{Error, ErrorKind, Result};
 use std::fmt::Display;
 use num_traits::Num;
-use std::string::ToString;
 
 pub struct Serializer {
     output: String,
