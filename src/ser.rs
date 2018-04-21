@@ -439,7 +439,3 @@ fn test_serialize_tuple_struct() {
     assert_eq!(to_string(&Tuple("mykey", (10, 'a'))).unwrap(), "*2$5\r\nmykey\r\n*2$2\r\n10\r\n$1\r\na\r\n");
 }
 
-//#[test]
-//fn test_serialize_num_types() {
-//    println!("{}", Serializer::serialize_num_types(5));
-//}
