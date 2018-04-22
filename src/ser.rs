@@ -9,7 +9,7 @@ pub struct Serializer {
 
 impl Serializer {
     fn serialize_num_types<T: Num + Display>(&self, v: T) -> String {
-        format!("${}\r\n{}\r\n", v.to_string().len(), v.to_string())
+        format!("${}\r\n{}\r\n", v.to_string().len(), v)
     }
 }
 
