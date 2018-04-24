@@ -300,201 +300,206 @@ impl<'a> ser::SerializeTupleStruct for &'a mut Serializer {
 
 ///////////////////////////////////////////////////////////////////
 
-#[test]
-fn test_serialize_bool() {
-    assert_eq!(to_string(&true).unwrap(), "$4\r\ntrue\r\n");
-    assert_eq!(to_string(&false).unwrap(), "$5\r\nfalse\r\n");
-}
+#[cfg(test)]
+mod test {
+    use super::*;
 
-#[test]
-fn test_serialize_i8() {
-    let neg_num: i8 = -100;
-    let pos_num: i8 = 100;
-    assert_eq!(to_string(&neg_num).unwrap(), "$4\r\n-100\r\n");
-    assert_eq!(to_string(&pos_num).unwrap(), "$3\r\n100\r\n");
-}
+    #[test]
+    fn test_serialize_bool() {
+        assert_eq!(to_string(&true).unwrap(), "$4\r\ntrue\r\n");
+        assert_eq!(to_string(&false).unwrap(), "$5\r\nfalse\r\n");
+    }
 
-#[test]
-fn test_serialize_i16() {
-    let neg_num: i16 = -100;
-    let pos_num: i16 = 100;
-    assert_eq!(to_string(&neg_num).unwrap(), "$4\r\n-100\r\n");
-    assert_eq!(to_string(&pos_num).unwrap(), "$3\r\n100\r\n");
-}
+    #[test]
+    fn test_serialize_i8() {
+        let neg_num: i8 = -100;
+        let pos_num: i8 = 100;
+        assert_eq!(to_string(&neg_num).unwrap(), "$4\r\n-100\r\n");
+        assert_eq!(to_string(&pos_num).unwrap(), "$3\r\n100\r\n");
+    }
 
-#[test]
-fn test_serialize_i32() {
-    let neg_num: i32 = -100;
-    let pos_num: i32 = 100;
-    assert_eq!(to_string(&neg_num).unwrap(), "$4\r\n-100\r\n");
-    assert_eq!(to_string(&pos_num).unwrap(), "$3\r\n100\r\n");
-}
+    #[test]
+    fn test_serialize_i16() {
+        let neg_num: i16 = -100;
+        let pos_num: i16 = 100;
+        assert_eq!(to_string(&neg_num).unwrap(), "$4\r\n-100\r\n");
+        assert_eq!(to_string(&pos_num).unwrap(), "$3\r\n100\r\n");
+    }
 
-#[test]
-fn test_serialize_i64() {
-    let neg_num: i32 = -100;
-    let pos_num: i32 = 100;
-    assert_eq!(to_string(&neg_num).unwrap(), "$4\r\n-100\r\n");
-    assert_eq!(to_string(&pos_num).unwrap(), "$3\r\n100\r\n");
-}
+    #[test]
+    fn test_serialize_i32() {
+        let neg_num: i32 = -100;
+        let pos_num: i32 = 100;
+        assert_eq!(to_string(&neg_num).unwrap(), "$4\r\n-100\r\n");
+        assert_eq!(to_string(&pos_num).unwrap(), "$3\r\n100\r\n");
+    }
 
-#[test]
-fn test_serialize_u8() {
-    let pos_num: u8 = 100;
-    assert_eq!(to_string(&pos_num).unwrap(), "$3\r\n100\r\n");
-}
+    #[test]
+    fn test_serialize_i64() {
+        let neg_num: i32 = -100;
+        let pos_num: i32 = 100;
+        assert_eq!(to_string(&neg_num).unwrap(), "$4\r\n-100\r\n");
+        assert_eq!(to_string(&pos_num).unwrap(), "$3\r\n100\r\n");
+    }
 
-#[test]
-fn test_serialize_u16() {
-    let pos_num: u16 = 100;
-    assert_eq!(to_string(&pos_num).unwrap(), "$3\r\n100\r\n");
-}
+    #[test]
+    fn test_serialize_u8() {
+        let pos_num: u8 = 100;
+        assert_eq!(to_string(&pos_num).unwrap(), "$3\r\n100\r\n");
+    }
 
-#[test]
-fn test_serialize_u32() {
-    let pos_num: u32 = 100;
-    assert_eq!(to_string(&pos_num).unwrap(), "$3\r\n100\r\n");
-}
+    #[test]
+    fn test_serialize_u16() {
+        let pos_num: u16 = 100;
+        assert_eq!(to_string(&pos_num).unwrap(), "$3\r\n100\r\n");
+    }
 
-#[test]
-fn test_serialize_u64() {
-    let pos_num: u64 = 100;
-    assert_eq!(to_string(&pos_num).unwrap(), "$3\r\n100\r\n");
-}
+    #[test]
+    fn test_serialize_u32() {
+        let pos_num: u32 = 100;
+        assert_eq!(to_string(&pos_num).unwrap(), "$3\r\n100\r\n");
+    }
 
-#[test]
-fn test_serialize_f32() {
-    let neg_num: f32 = -1.34;
-    let pos_num: f32 = 1.34;
-    assert_eq!(to_string(&neg_num).unwrap(), "$5\r\n-1.34\r\n");
-    assert_eq!(to_string(&pos_num).unwrap(), "$4\r\n1.34\r\n");
-}
+    #[test]
+    fn test_serialize_u64() {
+        let pos_num: u64 = 100;
+        assert_eq!(to_string(&pos_num).unwrap(), "$3\r\n100\r\n");
+    }
 
-#[test]
-fn test_serialize_char() {
-    assert_eq!(to_string(&'a').unwrap(), "$1\r\na\r\n");
-}
+    #[test]
+    fn test_serialize_f32() {
+        let neg_num: f32 = -1.34;
+        let pos_num: f32 = 1.34;
+        assert_eq!(to_string(&neg_num).unwrap(), "$5\r\n-1.34\r\n");
+        assert_eq!(to_string(&pos_num).unwrap(), "$4\r\n1.34\r\n");
+    }
 
-#[test]
-fn test_serialize_str() {
-    assert_eq!(to_string(&"").unwrap(), "$0\r\n\r\n");
-    assert_eq!(to_string(&"foobar").unwrap(), "$6\r\nfoobar\r\n");
-}
+    #[test]
+    fn test_serialize_char() {
+        assert_eq!(to_string(&'a').unwrap(), "$1\r\na\r\n");
+    }
 
-#[test]
-fn test_serialize_seq() {
-    // bool
-    assert_eq!(to_string(&(Vec::new() as Vec<bool>)).unwrap(), "*0\r\n");
-    assert_eq!(to_string(&vec![true, false]).unwrap(), "*2\r\n$4\r\ntrue\r\n$5\r\nfalse\r\n");
+    #[test]
+    fn test_serialize_str() {
+        assert_eq!(to_string(&"").unwrap(), "$0\r\n\r\n");
+        assert_eq!(to_string(&"foobar").unwrap(), "$6\r\nfoobar\r\n");
+    }
 
-    // signed int
-    assert_eq!(to_string(&(Vec::new() as Vec<i8>)).unwrap(), "*0\r\n");
-    assert_eq!(to_string(&vec![1 as i8, 2 as i8]).unwrap(), "*2\r\n$1\r\n1\r\n$1\r\n2\r\n");
+    #[test]
+    fn test_serialize_seq() {
+        // bool
+        assert_eq!(to_string(&(Vec::new() as Vec<bool>)).unwrap(), "*0\r\n");
+        assert_eq!(to_string(&vec![true, false]).unwrap(), "*2\r\n$4\r\ntrue\r\n$5\r\nfalse\r\n");
 
-    assert_eq!(to_string(&(Vec::new() as Vec<i16>)).unwrap(), "*0\r\n");
-    assert_eq!(to_string(&vec![1 as i16, 2 as i16]).unwrap(), "*2\r\n$1\r\n1\r\n$1\r\n2\r\n");
+        // signed int
+        assert_eq!(to_string(&(Vec::new() as Vec<i8>)).unwrap(), "*0\r\n");
+        assert_eq!(to_string(&vec![1 as i8, 2 as i8]).unwrap(), "*2\r\n$1\r\n1\r\n$1\r\n2\r\n");
 
-    assert_eq!(to_string(&(Vec::new() as Vec<i32>)).unwrap(), "*0\r\n");
-    assert_eq!(to_string(&vec![1 as i32, 2 as i32]).unwrap(), "*2\r\n$1\r\n1\r\n$1\r\n2\r\n");
+        assert_eq!(to_string(&(Vec::new() as Vec<i16>)).unwrap(), "*0\r\n");
+        assert_eq!(to_string(&vec![1 as i16, 2 as i16]).unwrap(), "*2\r\n$1\r\n1\r\n$1\r\n2\r\n");
 
-    assert_eq!(to_string(&(Vec::new() as Vec<i64>)).unwrap(), "*0\r\n");
-    assert_eq!(to_string(&vec![1 as i64, 2 as i64]).unwrap(), "*2\r\n$1\r\n1\r\n$1\r\n2\r\n");
+        assert_eq!(to_string(&(Vec::new() as Vec<i32>)).unwrap(), "*0\r\n");
+        assert_eq!(to_string(&vec![1 as i32, 2 as i32]).unwrap(), "*2\r\n$1\r\n1\r\n$1\r\n2\r\n");
 
-    // unsigned int
-    assert_eq!(to_string(&(Vec::new() as Vec<u8>)).unwrap(), "*0\r\n");
-    assert_eq!(to_string(&vec![1 as u8, 2 as u8]).unwrap(), "*2\r\n$1\r\n1\r\n$1\r\n2\r\n");
+        assert_eq!(to_string(&(Vec::new() as Vec<i64>)).unwrap(), "*0\r\n");
+        assert_eq!(to_string(&vec![1 as i64, 2 as i64]).unwrap(), "*2\r\n$1\r\n1\r\n$1\r\n2\r\n");
 
-    assert_eq!(to_string(&(Vec::new() as Vec<u16>)).unwrap(), "*0\r\n");
-    assert_eq!(to_string(&vec![1 as u16, 2 as u16]).unwrap(), "*2\r\n$1\r\n1\r\n$1\r\n2\r\n");
+        // unsigned int
+        assert_eq!(to_string(&(Vec::new() as Vec<u8>)).unwrap(), "*0\r\n");
+        assert_eq!(to_string(&vec![1 as u8, 2 as u8]).unwrap(), "*2\r\n$1\r\n1\r\n$1\r\n2\r\n");
 
-    assert_eq!(to_string(&(Vec::new() as Vec<u32>)).unwrap(), "*0\r\n");
-    assert_eq!(to_string(&vec![1 as u32, 2 as u32]).unwrap(), "*2\r\n$1\r\n1\r\n$1\r\n2\r\n");
+        assert_eq!(to_string(&(Vec::new() as Vec<u16>)).unwrap(), "*0\r\n");
+        assert_eq!(to_string(&vec![1 as u16, 2 as u16]).unwrap(), "*2\r\n$1\r\n1\r\n$1\r\n2\r\n");
 
-    assert_eq!(to_string(&(Vec::new() as Vec<u64>)).unwrap(), "*0\r\n");
-    assert_eq!(to_string(&vec![1 as u64, 2 as u64]).unwrap(), "*2\r\n$1\r\n1\r\n$1\r\n2\r\n");
+        assert_eq!(to_string(&(Vec::new() as Vec<u32>)).unwrap(), "*0\r\n");
+        assert_eq!(to_string(&vec![1 as u32, 2 as u32]).unwrap(), "*2\r\n$1\r\n1\r\n$1\r\n2\r\n");
 
-    // float
-    assert_eq!(to_string(&(Vec::new() as Vec<f32>)).unwrap(), "*0\r\n");
-    assert_eq!(to_string(&vec![1 as f32, 2.14 as f32]).unwrap(), "*2\r\n$1\r\n1\r\n$4\r\n2.14\r\n");
+        assert_eq!(to_string(&(Vec::new() as Vec<u64>)).unwrap(), "*0\r\n");
+        assert_eq!(to_string(&vec![1 as u64, 2 as u64]).unwrap(), "*2\r\n$1\r\n1\r\n$1\r\n2\r\n");
 
-    assert_eq!(to_string(&(Vec::new() as Vec<f64>)).unwrap(), "*0\r\n");
-    assert_eq!(to_string(&vec![1 as f64, 2.14 as f64]).unwrap(), "*2\r\n$1\r\n1\r\n$4\r\n2.14\r\n");
+        // float
+        assert_eq!(to_string(&(Vec::new() as Vec<f32>)).unwrap(), "*0\r\n");
+        assert_eq!(to_string(&vec![1 as f32, 2.14 as f32]).unwrap(), "*2\r\n$1\r\n1\r\n$4\r\n2.14\r\n");
 
-    // char
-    assert_eq!(to_string(&(Vec::new() as Vec<char>)).unwrap(), "*0\r\n");
-    assert_eq!(to_string(&vec!['a', 'b']).unwrap(), "*2\r\n$1\r\na\r\n$1\r\nb\r\n");
+        assert_eq!(to_string(&(Vec::new() as Vec<f64>)).unwrap(), "*0\r\n");
+        assert_eq!(to_string(&vec![1 as f64, 2.14 as f64]).unwrap(), "*2\r\n$1\r\n1\r\n$4\r\n2.14\r\n");
 
-    // Vec<Vec<T>>
-    assert_eq!(to_string(&(Vec::new() as Vec<Vec<char>>)).unwrap(), "*0\r\n");
-    assert_eq!(to_string(&vec![vec!['a'], vec!['b', 'c']]).unwrap(), "*2\r\n*1\r\n$1\r\na\r\n*2\r\n$1\r\nb\r\n$1\r\nc\r\n");
-}
+        // char
+        assert_eq!(to_string(&(Vec::new() as Vec<char>)).unwrap(), "*0\r\n");
+        assert_eq!(to_string(&vec!['a', 'b']).unwrap(), "*2\r\n$1\r\na\r\n$1\r\nb\r\n");
 
-#[test]
-fn test_serialize_tuple() {
-    assert_eq!(to_string(&("mykey", 10)).unwrap(), "*2\r\n$5\r\nmykey\r\n$2\r\n10\r\n");
-    assert_eq!(to_string(&("mykey", vec!['a', 'b'])).unwrap(), "*2\r\n$5\r\nmykey\r\n*2\r\n$1\r\na\r\n$1\r\nb\r\n");
-    assert_eq!(to_string(&("mykey", (10, 'a'))).unwrap(), "*2\r\n$5\r\nmykey\r\n*2\r\n$2\r\n10\r\n$1\r\na\r\n");
-}
+        // Vec<Vec<T>>
+        assert_eq!(to_string(&(Vec::new() as Vec<Vec<char>>)).unwrap(), "*0\r\n");
+        assert_eq!(to_string(&vec![vec!['a'], vec!['b', 'c']]).unwrap(), "*2\r\n*1\r\n$1\r\na\r\n*2\r\n$1\r\nb\r\n$1\r\nc\r\n");
+    }
 
-#[test]
-fn test_serialize_tuple_struct() {
-    #[derive(Serialize)]
-    struct Tuple<'a, T>(
-        &'a str,
-        T
-    );
+    #[test]
+    fn test_serialize_tuple() {
+        assert_eq!(to_string(&("mykey", 10)).unwrap(), "*2\r\n$5\r\nmykey\r\n$2\r\n10\r\n");
+        assert_eq!(to_string(&("mykey", vec!['a', 'b'])).unwrap(), "*2\r\n$5\r\nmykey\r\n*2\r\n$1\r\na\r\n$1\r\nb\r\n");
+        assert_eq!(to_string(&("mykey", (10, 'a'))).unwrap(), "*2\r\n$5\r\nmykey\r\n*2\r\n$2\r\n10\r\n$1\r\na\r\n");
+    }
 
-    assert_eq!(to_string(&Tuple("mykey", 10)).unwrap(), "*2\r\n$5\r\nmykey\r\n$2\r\n10\r\n");
-    assert_eq!(to_string(&Tuple("mykey", vec!['a', 'b'])).unwrap(), "*2\r\n$5\r\nmykey\r\n*2\r\n$1\r\na\r\n$1\r\nb\r\n");
-    assert_eq!(to_string(&Tuple("mykey", (10, 'a'))).unwrap(), "*2\r\n$5\r\nmykey\r\n*2\r\n$2\r\n10\r\n$1\r\na\r\n");
-}
+    #[test]
+    fn test_serialize_tuple_struct() {
+        #[derive(Serialize)]
+        struct Tuple<'a, T>(
+            &'a str,
+            T
+        );
 
-#[test]
-fn test_serialize_num_types() {
-    let ser = Serializer { output: "".to_owned() };
-    assert_eq!(ser.serialize_num_types(100 as i8), "$3\r\n100\r\n");
-    assert_eq!(ser.serialize_num_types(100 as i16), "$3\r\n100\r\n");
-    assert_eq!(ser.serialize_num_types(100 as i32), "$3\r\n100\r\n");
-    assert_eq!(ser.serialize_num_types(100 as i64), "$3\r\n100\r\n");
+        assert_eq!(to_string(&Tuple("mykey", 10)).unwrap(), "*2\r\n$5\r\nmykey\r\n$2\r\n10\r\n");
+        assert_eq!(to_string(&Tuple("mykey", vec!['a', 'b'])).unwrap(), "*2\r\n$5\r\nmykey\r\n*2\r\n$1\r\na\r\n$1\r\nb\r\n");
+        assert_eq!(to_string(&Tuple("mykey", (10, 'a'))).unwrap(), "*2\r\n$5\r\nmykey\r\n*2\r\n$2\r\n10\r\n$1\r\na\r\n");
+    }
 
-    assert_eq!(ser.serialize_num_types(100 as u8), "$3\r\n100\r\n");
-    assert_eq!(ser.serialize_num_types(100 as u16), "$3\r\n100\r\n");
-    assert_eq!(ser.serialize_num_types(100 as u32), "$3\r\n100\r\n");
-    assert_eq!(ser.serialize_num_types(100 as u64), "$3\r\n100\r\n");
+    #[test]
+    fn test_serialize_num_types() {
+        let ser = Serializer { output: "".to_owned() };
+        assert_eq!(ser.serialize_num_types(100 as i8), "$3\r\n100\r\n");
+        assert_eq!(ser.serialize_num_types(100 as i16), "$3\r\n100\r\n");
+        assert_eq!(ser.serialize_num_types(100 as i32), "$3\r\n100\r\n");
+        assert_eq!(ser.serialize_num_types(100 as i64), "$3\r\n100\r\n");
 
-    assert_eq!(ser.serialize_num_types(3.14 as f32), "$4\r\n3.14\r\n");
-    assert_eq!(ser.serialize_num_types(3.14 as f64), "$4\r\n3.14\r\n");
-}
+        assert_eq!(ser.serialize_num_types(100 as u8), "$3\r\n100\r\n");
+        assert_eq!(ser.serialize_num_types(100 as u16), "$3\r\n100\r\n");
+        assert_eq!(ser.serialize_num_types(100 as u32), "$3\r\n100\r\n");
+        assert_eq!(ser.serialize_num_types(100 as u64), "$3\r\n100\r\n");
 
-#[test]
-fn test_serialize_null() {
-    let ser = Serializer { output: "".to_owned() };
-    assert_eq!(ser.serialize_null(), "$-1\r\n");
-}
+        assert_eq!(ser.serialize_num_types(3.14 as f32), "$4\r\n3.14\r\n");
+        assert_eq!(ser.serialize_num_types(3.14 as f64), "$4\r\n3.14\r\n");
+    }
 
-#[test]
-fn test_serialize_unit() {
-    assert_eq!(to_string(&()).unwrap(), "$-1\r\n");
-}
+    #[test]
+    fn test_serialize_null() {
+        let ser = Serializer { output: "".to_owned() };
+        assert_eq!(ser.serialize_null(), "$-1\r\n");
+    }
 
-#[test]
-fn test_serialize_none() {
-    assert_eq!(to_string(&(None as Option<bool>)).unwrap(), "$-1\r\n");
+    #[test]
+    fn test_serialize_unit() {
+        assert_eq!(to_string(&()).unwrap(), "$-1\r\n");
+    }
 
-    assert_eq!(to_string(&(None as Option<char>)).unwrap(), "$-1\r\n");
+    #[test]
+    fn test_serialize_none() {
+        assert_eq!(to_string(&(None as Option<bool>)).unwrap(), "$-1\r\n");
 
-    assert_eq!(to_string(&(None as Option<i8>)).unwrap(), "$-1\r\n");
-    assert_eq!(to_string(&(None as Option<i16>)).unwrap(), "$-1\r\n");
-    assert_eq!(to_string(&(None as Option<i32>)).unwrap(), "$-1\r\n");
-    assert_eq!(to_string(&(None as Option<i64>)).unwrap(), "$-1\r\n");
+        assert_eq!(to_string(&(None as Option<char>)).unwrap(), "$-1\r\n");
 
-    assert_eq!(to_string(&(None as Option<u8>)).unwrap(), "$-1\r\n");
-    assert_eq!(to_string(&(None as Option<u16>)).unwrap(), "$-1\r\n");
-    assert_eq!(to_string(&(None as Option<u32>)).unwrap(), "$-1\r\n");
-    assert_eq!(to_string(&(None as Option<u64>)).unwrap(), "$-1\r\n");
+        assert_eq!(to_string(&(None as Option<i8>)).unwrap(), "$-1\r\n");
+        assert_eq!(to_string(&(None as Option<i16>)).unwrap(), "$-1\r\n");
+        assert_eq!(to_string(&(None as Option<i32>)).unwrap(), "$-1\r\n");
+        assert_eq!(to_string(&(None as Option<i64>)).unwrap(), "$-1\r\n");
 
-    assert_eq!(to_string(&(None as Option<f32>)).unwrap(), "$-1\r\n");
-    assert_eq!(to_string(&(None as Option<f64>)).unwrap(), "$-1\r\n");
+        assert_eq!(to_string(&(None as Option<u8>)).unwrap(), "$-1\r\n");
+        assert_eq!(to_string(&(None as Option<u16>)).unwrap(), "$-1\r\n");
+        assert_eq!(to_string(&(None as Option<u32>)).unwrap(), "$-1\r\n");
+        assert_eq!(to_string(&(None as Option<u64>)).unwrap(), "$-1\r\n");
 
-    assert_eq!(to_string(&(None as Option<String>)).unwrap(), "$-1\r\n");
+        assert_eq!(to_string(&(None as Option<f32>)).unwrap(), "$-1\r\n");
+        assert_eq!(to_string(&(None as Option<f64>)).unwrap(), "$-1\r\n");
+
+        assert_eq!(to_string(&(None as Option<String>)).unwrap(), "$-1\r\n");
+    }
 }
