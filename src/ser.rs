@@ -139,8 +139,11 @@ impl<'a> ser::Serializer for &'a mut Serializer {
         Err(ErrorKind::UnsupportedOperation("".to_owned()).into())
     }
 
+    // Serialise into RESP bulk string representation of null.
+    // The encoded form is "$-1\r\n".
     fn serialize_none(self) -> Result<Self::Ok> {
-        Err(ErrorKind::UnsupportedOperation("serialize_none".to_owned()).into())
+        self.output += &self.serialize_null();
+        Ok(())
     }
 
     fn serialize_some<T: ? Sized>(self, _value: &T) -> Result<Self::Ok> where
@@ -474,3 +477,24 @@ fn test_serialize_unit() {
     assert_eq!(to_string(&()).unwrap(), "$-1\r\n");
 }
 
+#[test]
+fn test_serialize_none() {
+    assert_eq!(to_string(&(None as Option<bool>)).unwrap(), "$-1\r\n");
+
+    assert_eq!(to_string(&(None as Option<char>)).unwrap(), "$-1\r\n");
+
+    assert_eq!(to_string(&(None as Option<i8>)).unwrap(), "$-1\r\n");
+    assert_eq!(to_string(&(None as Option<i16>)).unwrap(), "$-1\r\n");
+    assert_eq!(to_string(&(None as Option<i32>)).unwrap(), "$-1\r\n");
+    assert_eq!(to_string(&(None as Option<i64>)).unwrap(), "$-1\r\n");
+
+    assert_eq!(to_string(&(None as Option<u8>)).unwrap(), "$-1\r\n");
+    assert_eq!(to_string(&(None as Option<u16>)).unwrap(), "$-1\r\n");
+    assert_eq!(to_string(&(None as Option<u32>)).unwrap(), "$-1\r\n");
+    assert_eq!(to_string(&(None as Option<u64>)).unwrap(), "$-1\r\n");
+
+    assert_eq!(to_string(&(None as Option<f32>)).unwrap(), "$-1\r\n");
+    assert_eq!(to_string(&(None as Option<f64>)).unwrap(), "$-1\r\n");
+
+    assert_eq!(to_string(&(None as Option<String>)).unwrap(), "$-1\r\n");
+}
