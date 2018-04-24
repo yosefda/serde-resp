@@ -11,6 +11,10 @@ impl Serializer {
     fn serialize_num_types<T: Num + Display>(&self, v: T) -> String {
         format!("${}\r\n{}\r\n", v.to_string().len(), v)
     }
+
+    fn serialize_null(&self) -> String {
+        format!("$-1\r\n")
+    }
 }
 
 pub fn to_string<T>(value: &T) -> Result<String> where T: Serialize {
@@ -144,8 +148,11 @@ impl<'a> ser::Serializer for &'a mut Serializer {
         Err(ErrorKind::UnsupportedOperation("serialize_some".to_owned()).into())
     }
 
+    // Serialise into RESP bulk string representation of null.
+    // The encoded form is "$-1\r\n".
     fn serialize_unit(self) -> Result<Self::Ok> {
-        Err(ErrorKind::UnsupportedOperation("serialize_unit".to_owned()).into())
+        self.output += &self.serialize_null();
+        Ok(())
     }
 
     fn serialize_unit_struct(self, _name: &str) -> Result<Self::Ok> {
@@ -454,5 +461,16 @@ fn test_serialize_num_types() {
 
     assert_eq!(ser.serialize_num_types(3.14 as f32), "$4\r\n3.14\r\n");
     assert_eq!(ser.serialize_num_types(3.14 as f64), "$4\r\n3.14\r\n");
+}
+
+#[test]
+fn test_serialize_null() {
+    let ser = Serializer { output: "".to_owned() };
+    assert_eq!(ser.serialize_null(), "$-1\r\n");
+}
+
+#[test]
+fn test_serialize_unit() {
+    assert_eq!(to_string(&()).unwrap(), "$-1\r\n");
 }
 
