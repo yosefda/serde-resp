@@ -439,3 +439,20 @@ fn test_serialize_tuple_struct() {
     assert_eq!(to_string(&Tuple("mykey", (10, 'a'))).unwrap(), "*2\r\n$5\r\nmykey\r\n*2\r\n$2\r\n10\r\n$1\r\na\r\n");
 }
 
+#[test]
+fn test_serialize_num_types() {
+    let ser = Serializer { output: "".to_owned() };
+    assert_eq!(ser.serialize_num_types(100 as i8), "$3\r\n100\r\n");
+    assert_eq!(ser.serialize_num_types(100 as i16), "$3\r\n100\r\n");
+    assert_eq!(ser.serialize_num_types(100 as i32), "$3\r\n100\r\n");
+    assert_eq!(ser.serialize_num_types(100 as i64), "$3\r\n100\r\n");
+
+    assert_eq!(ser.serialize_num_types(100 as u8), "$3\r\n100\r\n");
+    assert_eq!(ser.serialize_num_types(100 as u16), "$3\r\n100\r\n");
+    assert_eq!(ser.serialize_num_types(100 as u32), "$3\r\n100\r\n");
+    assert_eq!(ser.serialize_num_types(100 as u64), "$3\r\n100\r\n");
+
+    assert_eq!(ser.serialize_num_types(3.14 as f32), "$4\r\n3.14\r\n");
+    assert_eq!(ser.serialize_num_types(3.14 as f64), "$4\r\n3.14\r\n");
+}
+
