@@ -146,9 +146,10 @@ impl<'a> ser::Serializer for &'a mut Serializer {
         Ok(())
     }
 
-    fn serialize_some<T: ? Sized>(self, _value: &T) -> Result<Self::Ok> where
+    fn serialize_some<T: ? Sized>(self, value: &T) -> Result<Self::Ok> where
         T: Serialize {
-        Err(ErrorKind::UnsupportedOperation("serialize_some".to_owned()).into())
+        let _result = value.serialize(self);
+        Ok(())
     }
 
     // Serialise into RESP bulk string representation of null.
@@ -312,66 +313,58 @@ mod test {
 
     #[test]
     fn test_serialize_i8() {
-        let neg_num: i8 = -100;
-        let pos_num: i8 = 100;
-        assert_eq!(to_string(&neg_num).unwrap(), "$4\r\n-100\r\n");
-        assert_eq!(to_string(&pos_num).unwrap(), "$3\r\n100\r\n");
+        assert_eq!(to_string(&(-100 as i8)).unwrap(), "$4\r\n-100\r\n");
+        assert_eq!(to_string(&(100 as i8)).unwrap(), "$3\r\n100\r\n");
     }
 
     #[test]
     fn test_serialize_i16() {
-        let neg_num: i16 = -100;
-        let pos_num: i16 = 100;
-        assert_eq!(to_string(&neg_num).unwrap(), "$4\r\n-100\r\n");
-        assert_eq!(to_string(&pos_num).unwrap(), "$3\r\n100\r\n");
+        assert_eq!(to_string(&(-100 as i8)).unwrap(), "$4\r\n-100\r\n");
+        assert_eq!(to_string(&(100 as i8)).unwrap(), "$3\r\n100\r\n");
     }
 
     #[test]
     fn test_serialize_i32() {
-        let neg_num: i32 = -100;
-        let pos_num: i32 = 100;
-        assert_eq!(to_string(&neg_num).unwrap(), "$4\r\n-100\r\n");
-        assert_eq!(to_string(&pos_num).unwrap(), "$3\r\n100\r\n");
+        assert_eq!(to_string(&(-100 as i8)).unwrap(), "$4\r\n-100\r\n");
+        assert_eq!(to_string(&(100 as i8)).unwrap(), "$3\r\n100\r\n");
     }
 
     #[test]
     fn test_serialize_i64() {
-        let neg_num: i32 = -100;
-        let pos_num: i32 = 100;
-        assert_eq!(to_string(&neg_num).unwrap(), "$4\r\n-100\r\n");
-        assert_eq!(to_string(&pos_num).unwrap(), "$3\r\n100\r\n");
+        assert_eq!(to_string(&(-100 as i8)).unwrap(), "$4\r\n-100\r\n");
+        assert_eq!(to_string(&(100 as i8)).unwrap(), "$3\r\n100\r\n");
     }
 
     #[test]
     fn test_serialize_u8() {
-        let pos_num: u8 = 100;
-        assert_eq!(to_string(&pos_num).unwrap(), "$3\r\n100\r\n");
+        assert_eq!(to_string(&(100 as u8)).unwrap(), "$3\r\n100\r\n");
     }
 
     #[test]
     fn test_serialize_u16() {
-        let pos_num: u16 = 100;
-        assert_eq!(to_string(&pos_num).unwrap(), "$3\r\n100\r\n");
+        assert_eq!(to_string(&(100 as u16)).unwrap(), "$3\r\n100\r\n");
     }
 
     #[test]
     fn test_serialize_u32() {
-        let pos_num: u32 = 100;
-        assert_eq!(to_string(&pos_num).unwrap(), "$3\r\n100\r\n");
+        assert_eq!(to_string(&(100 as u32)).unwrap(), "$3\r\n100\r\n");
     }
 
     #[test]
     fn test_serialize_u64() {
-        let pos_num: u64 = 100;
-        assert_eq!(to_string(&pos_num).unwrap(), "$3\r\n100\r\n");
+        assert_eq!(to_string(&(100 as u64)).unwrap(), "$3\r\n100\r\n");
     }
 
     #[test]
     fn test_serialize_f32() {
-        let neg_num: f32 = -1.34;
-        let pos_num: f32 = 1.34;
-        assert_eq!(to_string(&neg_num).unwrap(), "$5\r\n-1.34\r\n");
-        assert_eq!(to_string(&pos_num).unwrap(), "$4\r\n1.34\r\n");
+        assert_eq!(to_string(&(-1.34 as f32)).unwrap(), "$5\r\n-1.34\r\n");
+        assert_eq!(to_string(&(1.34 as f32)).unwrap(), "$4\r\n1.34\r\n");
+    }
+
+    #[test]
+    fn test_serialize_f64() {
+        assert_eq!(to_string(&(-1.34 as f64)).unwrap(), "$5\r\n-1.34\r\n");
+        assert_eq!(to_string(&(1.34 as f64)).unwrap(), "$4\r\n1.34\r\n");
     }
 
     #[test]
@@ -501,5 +494,38 @@ mod test {
         assert_eq!(to_string(&(None as Option<f64>)).unwrap(), "$-1\r\n");
 
         assert_eq!(to_string(&(None as Option<String>)).unwrap(), "$-1\r\n");
+    }
+
+    #[test]
+    fn test_serialize_some() {
+        assert_eq!(to_string(&Some(true)).unwrap(), "$4\r\ntrue\r\n");
+
+        assert_eq!(to_string(&Some(-1 as i8)).unwrap(), "$2\r\n-1\r\n");
+        assert_eq!(to_string(&Some(-1 as i16)).unwrap(), "$2\r\n-1\r\n");
+        assert_eq!(to_string(&Some(-100 as i32)).unwrap(), "$4\r\n-100\r\n");
+        assert_eq!(to_string(&Some(-100 as i64)).unwrap(), "$4\r\n-100\r\n");
+
+        assert_eq!(to_string(&Some(1 as u8)).unwrap(), "$1\r\n1\r\n");
+        assert_eq!(to_string(&Some(1 as u16)).unwrap(), "$1\r\n1\r\n");
+        assert_eq!(to_string(&Some(100 as u32)).unwrap(), "$3\r\n100\r\n");
+        assert_eq!(to_string(&Some(100 as u64)).unwrap(), "$3\r\n100\r\n");
+
+        assert_eq!(to_string(&Some(-1.34 as f32)).unwrap(), "$5\r\n-1.34\r\n");
+        assert_eq!(to_string(&Some(-1.34 as f64)).unwrap(), "$5\r\n-1.34\r\n");
+
+        assert_eq!(to_string(&Some('a')).unwrap(), "$1\r\na\r\n");
+
+        assert_eq!(to_string(&Some("foobar")).unwrap(), "$6\r\nfoobar\r\n");
+
+        assert_eq!(to_string(&Some(vec![vec!['a'], vec!['b', 'c']])).unwrap(), "*2\r\n*1\r\n$1\r\na\r\n*2\r\n$1\r\nb\r\n$1\r\nc\r\n");
+
+        assert_eq!(to_string(&Some(("mykey", (10, 'a')))).unwrap(), "*2\r\n$5\r\nmykey\r\n*2\r\n$2\r\n10\r\n$1\r\na\r\n");
+
+        #[derive(Serialize)]
+        struct Tuple<'a, T>(
+            &'a str,
+            T
+        );
+        assert_eq!(to_string(&Some(Tuple("mykey", (10, 'a')))).unwrap(), "*2\r\n$5\r\nmykey\r\n*2\r\n$2\r\n10\r\n$1\r\na\r\n");
     }
 }
